@@ -80,11 +80,21 @@ Because we are all humans, and to ensure Apicurio Registry is stable for everyon
 Don't forget to include tests in your pull requests.
 Also don't forget the documentation (reference documentation, javadoc...).
 
-Be sure to test your pull request using all storage variants:
+Be sure to test your pull request using all storage variants.  The storage
+variant is selected at **runtime** (not via a Maven profile) by setting the
+`APICURIO_STORAGE_KIND` environment variable or the
+`-Dapicurio.storage.kind=<kind>` system property.  Supported kinds are
+`sql` (PostgreSQL / MySQL), `kafkasql`, `gitops`, and `kubernetesops`.
 
-1. SQL storage (using the `-Psql` profile)
-2. SQL Server storage (using the `-Pmssql` profile)
-3. KafkaSQL storage (using the `-Pkafkasql` profile)
+For the full build and test workflow, see the
+[Storage Variants](DEVELOPING.md#storage-variants) section of
+`DEVELOPING.md`.
+
+> **Note:** The `-Psql`, `-Pmssql`, and `-Pkafkasql` Maven profiles were
+> removed in Registry 3.0 as part of the storage unification effort.
+> Passing these flags no longer selects a storage variant — Maven will
+> warn that the profile does not exist and then proceed with the default
+> configuration.
 
 ### Customizing Registry supported ArtifactTypes
 
