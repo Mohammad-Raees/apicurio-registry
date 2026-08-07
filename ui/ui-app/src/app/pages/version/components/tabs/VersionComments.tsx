@@ -119,18 +119,33 @@ export const VersionComments: FunctionComponent<VersionCommentsProps> = (props: 
     };
 
     useEffect(() => {
+        let cancelled = false;
+        const groupId = props.version.groupId || "default";
+        const artifactId = props.version.artifactId!;
+        const version = props.version.version!;
+
         setActionError(undefined);
+        setFilter("");
+        setCollapsed([]);
+        setComments([]);
         setIsLoading(true);
-        groups.getArtifactVersionComments(props.version.groupId || "default", props.version.artifactId!, props.version.version!)
+
+        groups.getArtifactVersionComments(groupId, artifactId, version)
             .then(comments => {
-                setComments(comments);
-                setIsLoading(false);
+                if (!cancelled) {
+                    setComments(comments);
+                    setIsLoading(false);
+                }
             })
             .catch((error: any) => {
-                setActionError(error?.message || "Error fetching comments. Please refresh the page.");
-                setIsLoading(false);
+                if (!cancelled) {
+                    setActionError(error?.message || "Error fetching comments. Please refresh the page.");
+                    setIsLoading(false);
+                }
             });
-    }, []);
+
+        return () => { cancelled = true; };
+    }, [props.version.groupId, props.version.artifactId, props.version.version]);
 
     useEffect(() => {
         setFilteredComments(comments.filter(comment => {
