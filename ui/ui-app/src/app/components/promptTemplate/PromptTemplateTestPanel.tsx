@@ -21,7 +21,7 @@ import {
 import { PromptVariable } from "./PromptTemplateViewer";
 import { GroupsService, useGroupsService } from "@services/useGroupsService.ts";
 import { RenderPromptResponse, RenderPromptValidationError } from "@models/RenderPromptResponse.ts";
-import { coerceEnumValue } from "./PromptTemplateTestPanel.utils";
+import { coerceEnumValue, getRenderPromptErrorMessage } from "./PromptTemplateTestPanel.utils";
 
 export type PromptTemplateTestPanelProps = {
     groupId: string;
@@ -94,8 +94,8 @@ export const PromptTemplateTestPanel: FunctionComponent<PromptTemplateTestPanelP
                     setValidationErrors(response.validationErrors);
                 }
             })
-            .catch((err: any) => {
-                setError(err?.message || "Error rendering prompt template");
+            .catch((err: unknown) => {
+                setError(getRenderPromptErrorMessage(err));
             })
             .finally(() => {
                 setIsLoading(false);

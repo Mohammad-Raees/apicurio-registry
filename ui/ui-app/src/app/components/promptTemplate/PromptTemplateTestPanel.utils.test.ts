@@ -1,5 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { coerceEnumValue } from "./PromptTemplateTestPanel.utils";
+import { coerceEnumValue, getRenderPromptErrorMessage } from "./PromptTemplateTestPanel.utils";
+
+describe("getRenderPromptErrorMessage", () => {
+    it("prefers ProblemDetails detail over title and message", () => {
+        expect(getRenderPromptErrorMessage({
+            detail: "Variable 'name' is required.",
+            title: "Bad Request",
+            message: "Request failed with status code 400"
+        })).toBe("Variable 'name' is required.");
+    });
+
+    it("falls back to ProblemDetails title when detail is missing", () => {
+        expect(getRenderPromptErrorMessage({
+            title: "Not Found",
+            message: "Request failed with status code 404"
+        })).toBe("Not Found");
+    });
+
+    it("falls back to Error.message for non-ProblemDetails failures", () => {
+        expect(getRenderPromptErrorMessage(new Error("Network Error"))).toBe("Network Error");
+    });
+
+    it("uses the default fallback for unknown error shapes", () => {
+        expect(getRenderPromptErrorMessage({})).toBe("Error rendering prompt template");
+    });
+
+    it("uses a custom fallback when provided", () => {
+        expect(getRenderPromptErrorMessage(null, "Custom fallback")).toBe("Custom fallback");
+    });
+});
 
 describe("coerceEnumValue", () => {
     it("parses an integer enum selection to a number", () => {
